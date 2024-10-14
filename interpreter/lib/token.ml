@@ -7,6 +7,17 @@ type token_type =
   (* Operators *)
   | Assign
   | Plus
+  | Minus
+  | Product
+  | Division
+  | Not
+  | LessThan
+  | GreaterThan
+  | Equal
+  | NotEqual
+  (* Booleans *)
+  | True
+  | False
   (* Delimiters *)
   | Comma
   | Semicolon
@@ -17,3 +28,6 @@ type token_type =
   (* Keywords *)
   | Function
   | Let
+  | If
+  | Else
+  | Return
