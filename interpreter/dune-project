@@ -1,0 +1,19 @@
+(lang dune 3.16)
+
+(name interpreter)
+
+(generate_opam_files true)
+
+(source
+ (github agorer/monkey-lang))
+
+(authors "Juanjo Molinero")
+
+(license MIT)
+
+(documentation https://interpreterbook.com/)
+
+(package
+ (name interpreter)
+ (synopsis "A short synopsis")
+ (depends ocaml dune))
