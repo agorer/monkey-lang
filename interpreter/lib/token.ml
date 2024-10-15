@@ -1,4 +1,4 @@
-type token_type =
+type t =
   Illegal
   | EOF
   (* Identifiers + literals *)
@@ -31,3 +31,4 @@ type token_type =
   | If
   | Else
   | Return
+[@@deriving show]
