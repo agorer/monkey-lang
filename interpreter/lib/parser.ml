@@ -34,16 +34,25 @@ let parse_let_statement parser =
     let parser, ident_token = next_token parser in
     let parser = skip_assign parser in
     let parser, expression = parse_expression parser in
-    parser, {
+    parser, Let({
       token = let_token;
       name = { token = ident_token; value = name };
       value = expression;
-    }
+    })
   | _ -> failwith "Let statement should start with identifier"
+
+let parse_return_statement parser =
+  let return_token = parser.current in
+  let parser, expression = parse_expression parser in
+  parser, Return({
+    token = return_token;
+    return_value = expression;
+  })
 
 let parse_statement parser =
   match parser.current with
   | Token.Let -> parse_let_statement parser
+  | Token.Return -> parse_return_statement parser
   | _ -> failwith "Unknown statement"
 
 let rec parse_program parser program =

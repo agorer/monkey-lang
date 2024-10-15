@@ -11,7 +11,13 @@ type let_statement = {
   value: expression;
 }
 
+type return_statement = {
+  token: Token.t;
+  return_value: expression;
+}
+
 type statement =
-  Let of let_statement
+  | Let of let_statement
+  | Return of return_statement
 
 type program = statement list
