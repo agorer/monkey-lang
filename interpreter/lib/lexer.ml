@@ -102,7 +102,7 @@ let nextToken lexer =
   | Some ',' -> lexer, Token.Comma
   | Some '+' -> lexer, Token.Plus
   | Some '-' -> lexer, Token.Minus
-  | Some '*' -> lexer, Token.Product
+  | Some '*' -> lexer, Token.Multiplication
   | Some '/' -> lexer, Token.Division
   | Some '{' -> lexer, Token.LeftBrace
   | Some '}' -> lexer, Token.RightBrace

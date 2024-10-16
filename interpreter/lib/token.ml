@@ -8,7 +8,7 @@ type t =
   | Assign
   | Plus
   | Minus
-  | Product
+  | Multiplication
   | Division
   | Not
   | LessThan
