@@ -1,12 +1,4 @@
 let prompt = ">> "
-
-let rec consume lexer out_channel =
-  let lexer, token = Lexer.nextToken lexer in
-  match token with
-  | Token.EOF -> ()
-  | token ->
-    Printf.fprintf out_channel "%s\n" (Token.show token);
-    consume lexer out_channel
   
 let rec start in_channel out_channel =
   let () = Printf.fprintf out_channel "%s%!" prompt in
@@ -15,5 +7,7 @@ let rec start in_channel out_channel =
   | None -> ()
   | Some input ->
     let lexer = Lexer.make input in
-    let () = consume lexer out_channel in
+    let parser = Parser.make lexer in
+    let program = Parser.parse_program parser [] in
+    print_endline (Ast.show_program program);
     start in_channel out_channel
