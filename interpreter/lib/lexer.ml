@@ -70,6 +70,8 @@ let consume_identifier lexer =
   | "if" -> lexer, Token.If
   | "else" -> lexer, Token.Else
   | "return" -> lexer, Token.Return
+  | "true" -> lexer, Token.True
+  | "false" -> lexer, Token.False
   | other -> lexer, Token.Ident other
 
 let consume_digit lexer =

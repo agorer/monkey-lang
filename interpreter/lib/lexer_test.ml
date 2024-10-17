@@ -119,3 +119,11 @@ let%test "should tokenize return statements" =
   maybeReturn = Token.Return &&
   maybeA = Token.Ident "a" &&
   maybeSemicolon = Token.Semicolon
+
+let%test "should tokenize boolean literals" =
+  let lexer = Lexer.make "true; false" in
+  let lexer, maybeTrue = Lexer.nextToken lexer in
+  let lexer, _ = Lexer.nextToken lexer in
+  let _, maybeFalse = Lexer.nextToken lexer in
+  maybeTrue = Token.True &&
+  maybeFalse = Token.False

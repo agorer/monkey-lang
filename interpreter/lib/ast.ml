@@ -1,8 +1,29 @@
-type expression =
+type statement =
+  | Let of let_statement
+  | Return of return_statement
+  | Expression of expression
+and let_statement = {
+  token: Token.t;
+  name: identifier;
+  value: expression;
+}
+and return_statement = {
+  token: Token.t;
+  return_value: expression;
+}
+and block_statement = {
+  token: Token.t;
+  statements: statement list;
+}
+and expression =
   | Identifier of identifier
   | Integer of integer_literal
+  | Boolean of boolean_literal
   | Prefix of prefix_expression
   | Infix of infix_expression
+  | Conditional of if_expression
+  | Function of fn_expresssion
+  | Call of fn_call_expression
 and identifier = {
   token: Token.t;
   value: string
@@ -10,6 +31,10 @@ and identifier = {
 and integer_literal = {
   token: Token.t;
   value: int
+}
+and boolean_literal = {
+  token: Token.t;
+  value: bool
 }
 and prefix_expression = {
   token: Token.t;
@@ -20,25 +45,22 @@ and infix_expression = {
   left: expression;
   right: expression;
 }
-[@@deriving show]
-                    
-type let_statement = {
+and if_expression = {
   token: Token.t;
-  name: identifier;
-  value: expression;
+  condition: expression;
+  consecuence: block_statement;
+  alternative: block_statement option;
 }
-[@@deriving show]
-
-type return_statement = {
+and fn_expresssion = {
   token: Token.t;
-  return_value: expression;
+  parameters: identifier list;
+  body: block_statement;
 }
-[@@deriving show]
-
-type statement =
-  | Let of let_statement
-  | Return of return_statement
-  | Expression of expression
+and fn_call_expression = {
+  token: Token.t;
+  func: expression;
+  arguments: expression list;
+}
 [@@deriving show]
 
 type program = statement list
