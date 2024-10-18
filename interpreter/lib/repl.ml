@@ -9,5 +9,6 @@ let rec start in_channel out_channel =
     let lexer = Lexer.make input in
     let parser = Parser.make lexer in
     let program = Parser.parse_program parser [] in
-    print_endline (Ast.show_program program);
+    let result = Evaluator.eval_program program in
+    print_endline (Object.show result);
     start in_channel out_channel
