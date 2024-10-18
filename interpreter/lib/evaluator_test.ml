@@ -2,7 +2,7 @@ let setup input =
   let lexer = Lexer.make input in
   let parser = Parser.make lexer in
   let program = Parser.parse_program parser [] in
-  Evaluator.eval_program program
+  Evaluator.eval_statements program
     
 let%test "Eval integer expression" =
   let input = "5" in
@@ -63,3 +63,24 @@ let%test "Boolean disequality operator" =
   let input = "true != true" in
   let result = setup input in
   result = Boolean false
+
+let%test "If true expression" =
+  let input = "if (true) { 10 }" in
+  let result = setup input in
+  result = Integer 10
+
+let%test "If false expression" =
+  let input = "if (false) { 10 }" in
+  let result = setup input in
+  result = Null
+
+let%test "If-else true expression" =
+  let input = "if (true) { 10 } else { 11 }" in
+  let result = setup input in
+  result = Integer 10
+
+let%test "If-else false expression" =
+  let input = "if (false) { 10 } else { 11 }" in
+  let result = setup input in
+  result = Integer 11
+

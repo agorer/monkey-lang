@@ -1,10 +1,10 @@
-let rec eval_program program =
+let rec eval_statements program =
   match program with
-  | [] -> failwith "Cannot evaluate an empty program"
+  | [] -> failwith "Cannot evaluate an empty list of statements"
   | statement :: [] -> eval statement
   | statement :: rest ->
     let _ = eval statement in
-    eval_program rest
+    eval_statements rest
 
 and eval statement =
   match statement with
@@ -21,6 +21,8 @@ and eval_expression expr =
     let left = eval_expression data.left in
     let right = eval_expression data.right in
     eval_infix data.token left right
+  | Conditional {condition; consecuence; alternative; _} ->
+    eval_conditional condition consecuence alternative
   | _ -> failwith ("Unknown expression: " ^ (Ast.show_expression expr))
 
 and eval_prefix operator right =
@@ -56,3 +58,11 @@ and eval_int_op left right op =
   match left, right with
   | Integer left, Integer right -> Integer (op left right)
   | _ -> failwith "Integer operator should have integer operands"
+
+and eval_conditional condition consecuence alternative =
+  let condition = eval_expression condition in
+  match condition, alternative with
+  | Boolean true, _ -> eval_statements consecuence.statements
+  | Boolean false, Some alternative -> eval_statements alternative.statements
+  | Boolean false, None -> Null
+  | _ -> failwith "Conditional condition should evaluate to boolean"
