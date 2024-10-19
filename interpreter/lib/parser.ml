@@ -211,14 +211,17 @@ and parse_parameters parser parameters =
     parser, parameters
   | _ ->
     let parser, parameter = parse_parameter parser in
-    parse_parameters parser (parameters @ [parameter])
+    match parameter with
+    | None -> parse_parameters parser parameters
+    | Some parameter -> parse_parameters parser (parameters @ [parameter])
 
 and parse_parameter parser =
   let parser, token = next_token parser in
   match token with
+  | RightParen -> parser, None
   | Ident value ->
     let parser, _ = next_token parser in (* skip identifier *)
-    parser, { token; value }
+    parser, Some { token; value }
   | _ -> failwith "Expected identifier token"
 
 and parse_call parser func =

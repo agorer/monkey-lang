@@ -1,7 +1,7 @@
 module StringMap = Map.Make(String)
     
-type t = {
-  store: Object.t StringMap.t
+type 'a t = {
+  store: 'a StringMap.t
 }
 
 let make () =
@@ -12,3 +12,6 @@ let get env name =
 
 let set env name value =
   { store = StringMap.add name value env.store }
+
+(* let pp formatter _env = *)
+(*   Format.fprintf formatter "<env not printable" *)

@@ -96,12 +96,12 @@ let%test "If-else false expression" =
 let%test "Return statement" =
   let input = "5; return 6; 7;" in
   let result = setup input in
-  result = Integer 6
+  result = Return (Integer 6)
 
 let%test "Nested return statement" =
-  let input = "if (true) { return 5; }; 6;" in
+  let input = "if (true) { if (true ) { return 5; } 6; }; 6;" in
   let result = setup input in
-  result  = Integer 5
+  result  = Return (Integer 5)
 
 let%test "Error handling" =
   let input = "5 + true" in
@@ -112,3 +112,18 @@ let%test "Let statements" =
   let input = "let a = 5; 5 * a" in
   let result = setup input in
   result = Integer  25
+
+let%test "Function call" =
+  let input = "let double_sum = fn(x, y) { 2 * (x + y) }; double_sum(1, 2)" in
+  let result = setup input in
+  result = Integer 6
+
+let%test "Function expression call" =
+  let input = "fn(x, y) { 2 * (x + y) }(1, 2)" in
+  let result = setup input in
+  result = Integer 6
+
+let%test "Function return" =
+  let input = "fn(x) { return x }(1); return 2" in
+  let result = setup input in
+  result = Return (Integer 2)

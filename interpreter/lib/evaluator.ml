@@ -6,7 +6,7 @@ let rec eval_statements program env =
   | statement :: rest ->
     let env, result = eval statement env in
     match result with
-    | Object.Return result -> result, env
+    | Object.Return _ -> result, env
     | _ -> eval_statements rest env
 
 and eval statement env =
@@ -33,7 +33,8 @@ and eval_expression expr env =
     eval_infix data.token left right
   | Conditional {condition; consecuence; alternative; _} ->
     eval_conditional condition consecuence alternative env
-  | _ -> failwith ("Unknown expression: " ^ (Ast.show_expression expr))
+  | Function { parameters; body; _} -> Function { parameters; body; env }
+  | Call { func; arguments; _} -> eval_call func arguments env
 
 and eval_prefix operator right =
   match operator with
@@ -84,3 +85,26 @@ and eval_identifier name env =
   match value with
   | Some value -> value
   | None -> failwith ("Using non-existent variable: " ^ name)
+
+and eval_call func args env =
+  let func = eval_expression func env in
+  match func with
+  | Function func -> 
+    let env = eval_args func.parameters args env in
+    let result, _ = eval_statements func.body.statements env in
+    unwrap_return result
+  | _ -> failwith "Function call does not evaluate to function expression"
+
+and unwrap_return result =
+  match result with
+  | Object.Return result -> result
+  | other -> other
+
+and eval_args parameters args env =
+  match parameters, args with
+  | [], [] -> env
+  | param :: parameters, arg :: args ->
+    let arg_value = eval_expression arg env in
+    let env = Environment.set env param.value arg_value in
+    eval_args parameters args env
+  | _, _ -> failwith "In function call: number of params and args is different"
