@@ -2,12 +2,18 @@ let setup input =
   let lexer = Lexer.make input in
   let parser = Parser.make lexer in
   let program = Parser.parse_program parser [] in
-  Evaluator.eval_statements program
+  try Evaluator.eval_statements program with
+  | Failure msg -> Object.Error msg
     
 let%test "Eval integer expression" =
   let input = "5" in
   let result = setup input in
   result = Integer 5
+
+let%test "Eval multiple statements" =
+  let input = "5; 6;" in
+  let result = setup input in
+  result = Integer 6
 
 let%test "Eval boolean expression" =
   let input = "true" in
@@ -84,3 +90,17 @@ let%test "If-else false expression" =
   let result = setup input in
   result = Integer 11
 
+let%test "Return statement" =
+  let input = "5; return 6; 7;" in
+  let result = setup input in
+  result = Integer 6
+
+let%test "Nested return statement" =
+  let input = "if (true) { return 5; }; 6;" in
+  let result = setup input in
+  result  = Integer 5
+
+let%test "Error handling" =
+  let input = "5 + true" in
+  let result = setup input in
+  result = Error "Integer operator should have integer operands"

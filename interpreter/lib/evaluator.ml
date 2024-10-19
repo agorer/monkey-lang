@@ -3,12 +3,17 @@ let rec eval_statements program =
   | [] -> failwith "Cannot evaluate an empty list of statements"
   | statement :: [] -> eval statement
   | statement :: rest ->
-    let _ = eval statement in
-    eval_statements rest
+    let result = eval statement in
+    match result with
+    | Object.Return result -> result
+    | _ -> eval_statements rest
 
 and eval statement =
   match statement with
   | Ast.Expression e -> eval_expression e
+  | Return statement ->
+    let result = eval_expression statement.return_value in
+    Object.Return result
   | _ -> failwith ("Unknown statement: " ^ (Ast.show_statement statement))
 
 and eval_expression expr =
