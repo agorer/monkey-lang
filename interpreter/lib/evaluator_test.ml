@@ -2,8 +2,11 @@ let setup input =
   let lexer = Lexer.make input in
   let parser = Parser.make lexer in
   let program = Parser.parse_program parser [] in
-  try Evaluator.eval_statements program with
-  | Failure msg -> Object.Error msg
+  let env = Environment.make () in
+  let result, _ =
+    try Evaluator.eval_statements program env with
+    | Failure msg -> (Object.Error msg), env in
+  result
     
 let%test "Eval integer expression" =
   let input = "5" in
@@ -104,3 +107,8 @@ let%test "Error handling" =
   let input = "5 + true" in
   let result = setup input in
   result = Error "Integer operator should have integer operands"
+
+let%test "Let statements" =
+  let input = "let a = 5; 5 * a" in
+  let result = setup input in
+  result = Integer  25
