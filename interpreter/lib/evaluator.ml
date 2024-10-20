@@ -24,6 +24,7 @@ and eval_expression expr env =
   match expr with
   | Ast.Integer integer -> Object.Integer integer.value
   | Boolean boolean -> Object.Boolean boolean.value
+  | String str -> Object.String str.value
   | Identifier identifier -> eval_identifier identifier.value env
   | Prefix data ->
     let right = eval_expression data.right env in eval_prefix data.token right
@@ -55,7 +56,11 @@ and eval_minus right =
 
 and eval_infix operator left right =
   match operator with
-  | Token.Plus -> eval_int_op left right Int.add
+  | Token.Plus ->
+    (match left, right with
+    | Integer left, Integer right -> Integer (left + right)
+    | String left, String right -> String (left ^ right)
+    | _ -> failwith "Operands must be same type for (+) op")
   | Token.Minus -> eval_int_op left right Int.sub
   | Token.Multiplication -> eval_int_op left right Int.mul
   | Token.Division -> eval_int_op left right Int.div

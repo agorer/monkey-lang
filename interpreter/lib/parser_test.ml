@@ -75,7 +75,6 @@ let%test "Function expresssions" =
   (List.length program) = 1
 
 let%test "Function with no parameters" =
-  print_endline "Function with no parameters";
   let input = "fn() { 1 }" in
   let program = setup input in
   (List.length program) = 1
@@ -84,3 +83,13 @@ let%test "Function calls" =
   let input = "fn (x, y) { x + y; } (1, 2);" in
   let program = setup input in
   (List.length program = 1)
+
+let%test "String literal expressions" =
+  let input  = {|"Hello world!"|} in
+  let program = setup input in
+  (List.length program  = 1)
+
+let%test "String concat expressions" =
+  let input  = {|"Hello" + " world!"|} in
+  let program = setup input in
+  (List.length program  = 1)

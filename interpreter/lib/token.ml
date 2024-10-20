@@ -4,6 +4,7 @@ type t =
   (* Identifiers + literals *)
   | Ident of string
   | Int of int
+  | String of string
   (* Operators *)
   | Assign
   | Plus

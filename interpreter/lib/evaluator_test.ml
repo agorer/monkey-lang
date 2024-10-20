@@ -104,7 +104,7 @@ let%test "Nested return statement" =
   result  = Return (Integer 5)
 
 let%test "Error handling" =
-  let input = "5 + true" in
+  let input = "5 - true" in
   let result = setup input in
   result = Error "Integer operator should have integer operands"
 
@@ -127,3 +127,13 @@ let%test "Function return" =
   let input = "fn(x) { return x }(1); return 2" in
   let result = setup input in
   result = Return (Integer 2)
+
+let%test "Eval string expression" =
+  let input = {|"Hello world!"|} in
+  let result = setup input in
+  result = String "Hello world!"
+
+let%test "Eval string concat" =
+  let input = {|"Hello" + " world!"|} in
+  let result = setup input in
+  result = String "Hello world!"

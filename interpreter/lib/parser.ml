@@ -109,6 +109,7 @@ and prefix_func token =
   | Token.Ident _ -> Some parse_identifier
   | Int _ -> Some parse_integer
   | True | False -> Some parse_boolean
+  | String _ -> Some parse_string
   | Not | Token.Minus -> Some parse_prefix
   | LeftParen -> Some parse_group
   | If -> Some parse_if
@@ -157,6 +158,11 @@ and parse_boolean parser =
   | True -> parser, Boolean({ token = parser.current; value = true })
   | False -> parser, Boolean({ token = parser.current; value = false })
   | _ -> failwith "Expected boolean literal token"
+
+and parse_string parser =
+  match parser.current with
+  | String value -> parser, String({ token = parser.current; value})
+  | _ -> failwith "Expected string literal token"
 
 and parse_prefix parser =
   let token = parser.current in

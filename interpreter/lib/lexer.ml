@@ -92,6 +92,15 @@ let consume_bang lexer =
     lexer, Token.NotEqual
   | None | Some _ -> lexer, Token.Not
 
+let rec consume_string lexer acc =
+  let lexer = read_char lexer in
+  match lexer.current with
+  | Some '"' -> lexer, Token.String acc
+  | Some ch ->
+    let acc = acc ^ Char.escaped ch in
+    consume_string lexer acc
+  | None -> failwith "Unterminated string reached end of file"
+
 let nextToken lexer =
   let lexer = read_char lexer in
   let lexer = skip_whitespace lexer in
@@ -111,6 +120,7 @@ let nextToken lexer =
   | Some '<' -> lexer, Token.LessThan
   | Some '>' -> lexer, Token.GreaterThan
   | Some '!' -> consume_bang lexer
+  | Some '"' -> consume_string lexer ""
   | Some ch ->
     if is_letter ch then consume_identifier lexer
     else if is_digit ch then consume_digit lexer

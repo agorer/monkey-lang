@@ -19,6 +19,7 @@ and expression =
   | Identifier of identifier
   | Integer of integer_literal
   | Boolean of boolean_literal
+  | String of string_literal
   | Prefix of prefix_expression
   | Infix of infix_expression
   | Conditional of if_expression
@@ -35,6 +36,10 @@ and integer_literal = {
 and boolean_literal = {
   token: Token.t;
   value: bool
+}
+and string_literal = {
+  token: Token.t;
+  value: string
 }
 and prefix_expression = {
   token: Token.t;

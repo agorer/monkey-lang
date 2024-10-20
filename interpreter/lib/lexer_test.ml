@@ -127,3 +127,8 @@ let%test "should tokenize boolean literals" =
   let _, maybeFalse = Lexer.nextToken lexer in
   maybeTrue = Token.True &&
   maybeFalse = Token.False
+
+let%test "should tokenize string literals" =
+  let lexer = Lexer.make {|"hello world!"|} in
+  let _, maybeString = Lexer.nextToken lexer in
+  maybeString = Token.String "hello world!"
