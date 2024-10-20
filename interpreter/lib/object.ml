@@ -2,6 +2,7 @@ type t =
   | Integer of int
   | Boolean of bool
   | String of string
+  | Array of t list
   | Return of t
   | Function of function_info
   | Builtin of builtin
@@ -21,8 +22,14 @@ let rec show obj =
   | Integer i -> string_of_int i
   | Boolean b -> string_of_bool b
   | String s -> s
+  | Array elements ->
+    let inside =
+      List.fold_left (fun acc elt -> acc ^ ", " ^ (show elt)) "" elements in
+    "[" ^ (remove_first_comma inside) ^ "]"
   | Return obj -> "return: " ^ show obj
   | Function _ -> "<function>"
   | Builtin _ -> "<builtin function>"
   | Error msg -> "Error: " ^ msg
   | Null -> "<null>"
+and remove_first_comma str =
+  String.sub str 2 (String.length str - 2)

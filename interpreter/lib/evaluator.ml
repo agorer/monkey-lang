@@ -36,6 +36,8 @@ and eval_expression expr env =
     eval_conditional condition consecuence alternative env
   | Function { parameters; body; _} -> Function { parameters; body; env }
   | Call { func; arguments; _} -> eval_call func arguments env
+  | Array { elements; _} -> eval_array elements env
+  | Index { array; index; _} -> eval_index array index env
 
 and eval_prefix operator right =
   match operator with
@@ -122,3 +124,24 @@ and eval_builtin func args env =
   | Binary func ->
     let second = eval_expression (List.nth args 1) env in
     func first second
+
+and eval_array elements env =
+  let elements = eval_elements elements env [] in
+  Array elements
+
+and eval_elements elements env values =
+  match elements with
+  | [] -> values
+  | elt :: elements ->
+    let values = values @ [eval_expression elt env] in
+    eval_elements elements env values
+
+and eval_index array index env =
+  let values = eval_expression array env in
+  match values with
+  | Array elements ->
+    let index = eval_expression index env in
+    (match index with
+     | Integer i -> List.nth elements i
+     | _ -> failwith "Only integers can be used as an index")
+  | _ -> failwith "Only array expressions can be indexed"

@@ -14,6 +14,8 @@ type precedence =
   | Product
   | Prefix
   | Call
+  | Index
+[@@deriving show]
 
 let to_precedence token =
   match token with
@@ -25,7 +27,8 @@ let to_precedence token =
   | Minus -> Sum
   | Division -> Product
   | Multiplication -> Product
-  | LeftParen -> Call 
+  | LeftParen -> Call
+  | LeftBracket -> Index
   | _ -> Lowest
 
 let make lexer =
@@ -114,6 +117,7 @@ and prefix_func token =
   | LeftParen -> Some parse_group
   | If -> Some parse_if
   | Function -> Some parse_fn
+  | LeftBracket -> Some parse_array
   | _ -> None
 
 and infix_func token =
@@ -127,6 +131,7 @@ and infix_func token =
   | LessThan
   | GreaterThan -> Some parse_infix
   | LeftParen -> Some parse_call
+  | LeftBracket -> Some parse_index
   | _ -> None
 
 and parse_block parser =
@@ -232,24 +237,40 @@ and parse_parameter parser =
 
 and parse_call parser func =
   let token = parser.current in
-  let parser, arguments = parse_arguments parser [] in
+  let parser, arguments = parse_expression_list parser [] in
   parser, Ast.Call({token; func; arguments})
 
-and parse_arguments parser arguments =
+and parse_expression_list parser expressions =
   let advance_to_separator parser =
     match parser.peek with
-    | Comma | RightParen -> let parser, _ = next_token parser in parser
+    | Comma | RightParen | RightBracket -> let parser, _ = next_token parser in parser
     | _ -> parser
   in
   match parser.current with
   | Token.RightParen ->
     let parser, _ = next_token parser in (* skip right paren *)
-    parser, arguments
+    parser, expressions
+  | Token.RightBracket -> parser, expressions
   | _ ->
-    let parser, _ = next_token parser in (* skip left paren or comma *)
-    let parser, argument = parse_expression parser Lowest in
-    let parser = advance_to_separator parser in
-    parse_arguments parser (arguments @ [argument])
+    let parser, token = next_token parser in (* skip separator or comma *)
+    if token <> Token.RightParen && token <> Token.RightBracket then
+      let parser, expression = parse_expression parser Lowest in
+      let parser = advance_to_separator parser in
+      parse_expression_list parser (expressions @ [expression])
+    else
+      parse_expression_list parser expressions
+
+and parse_array parser =
+  let token = parser.current in
+  let parser, elements = parse_expression_list parser [] in
+  parser, Ast.Array({token; elements})
+
+and parse_index parser array =
+  let token = parser.current in
+  let parser, _ = next_token parser in (* skip left bracket *)
+  let parser, index = parse_expression parser Lowest in
+  let parser = advance_to parser Token.RightBracket in
+  parser, Ast.Index({ token; array; index })
 
 let rec parse_program parser program =
   match parser.current with

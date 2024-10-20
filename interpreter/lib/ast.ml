@@ -25,6 +25,8 @@ and expression =
   | Conditional of if_expression
   | Function of fn_expresssion
   | Call of fn_call_expression
+  | Array of array_literal
+  | Index of array_index
 and identifier = {
   token: Token.t;
   value: string
@@ -65,6 +67,15 @@ and fn_call_expression = {
   token: Token.t;
   func: expression;
   arguments: expression list;
+}
+and array_literal = {
+  token: Token.t;
+  elements: expression list;
+}
+and array_index = {
+  token: Token.t;
+  array: expression;
+  index: expression;
 }
 [@@deriving show]
 

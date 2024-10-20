@@ -26,6 +26,8 @@ type t =
   | RightParen
   | LeftBrace
   | RightBrace
+  | LeftBracket
+  | RightBracket
   (* Keywords *)
   | Function
   | Let

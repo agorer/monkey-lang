@@ -82,14 +82,34 @@ let%test "Function with no parameters" =
 let%test "Function calls" =
   let input = "fn (x, y) { x + y; } (1, 2);" in
   let program = setup input in
-  (List.length program = 1)
+  (List.length program) = 1
+
+let%test "Function call with no args" =
+  let input = "fn () { 1 } ();" in
+  let program = setup input in
+  (List.length program) = 1
 
 let%test "String literal expressions" =
   let input  = {|"Hello world!"|} in
   let program = setup input in
-  (List.length program  = 1)
+  (List.length program)  = 1
 
 let%test "String concat expressions" =
   let input  = {|"Hello" + " world!"|} in
   let program = setup input in
-  (List.length program  = 1)
+  (List.length program)  = 1
+
+let%test "Array literal expressions" =
+  let input = "[1, 2]" in
+  let program = setup input in
+  (List.length program) = 1
+
+let%test "Empty arrays" =
+  let input = "[]" in
+  let program = setup input in
+  (List.length program) = 1
+
+let%test "Array index expressions" =
+  let input ="[1, 2][1]" in
+  let program = setup input in
+  (List.length program) = 1

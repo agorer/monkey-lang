@@ -121,6 +121,8 @@ let nextToken lexer =
   | Some '>' -> lexer, Token.GreaterThan
   | Some '!' -> consume_bang lexer
   | Some '"' -> consume_string lexer ""
+  | Some '[' -> lexer, Token.LeftBracket
+  | Some ']' -> lexer, Token.RightBracket
   | Some ch ->
     if is_letter ch then consume_identifier lexer
     else if is_digit ch then consume_digit lexer

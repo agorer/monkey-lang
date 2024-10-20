@@ -132,3 +132,16 @@ let%test "should tokenize string literals" =
   let lexer = Lexer.make {|"hello world!"|} in
   let _, maybeString = Lexer.nextToken lexer in
   maybeString = Token.String "hello world!"
+
+let%test "should tokenize arrays" =
+  let lexer = Lexer.make "[1, 2]" in
+  let lexer, maybeLeft = Lexer.nextToken lexer in
+  let lexer, maybeFirstElt = Lexer.nextToken lexer in
+  let lexer, maybeComma = Lexer.nextToken lexer in
+  let lexer, maybeSecondElt = Lexer.nextToken lexer in
+  let _, maybeRight = Lexer.nextToken lexer in
+  maybeLeft = Token.LeftBracket &&
+  maybeFirstElt = Token.Int 1 &&
+  maybeComma = Token.Comma &&
+  maybeSecondElt = Token.Int 2 &&
+  maybeRight = Token.RightBracket
