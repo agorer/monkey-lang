@@ -3,6 +3,7 @@ let setup input =
   let parser = Parser.make lexer in
   let program = Parser.parse_program parser [] in
   let env = Environment.make () in
+  let env = Builtins.add_builtins env in
   let result, _ =
     try Evaluator.eval_statements program env with
     | Failure msg -> (Object.Error msg), env in
@@ -137,3 +138,13 @@ let%test "Eval string concat" =
   let input = {|"Hello" + " world!"|} in
   let result = setup input in
   result = String "Hello world!"
+
+let%test "Builtins len" =
+  let input = {|len("four")|} in
+  let result =  setup input in
+  result = Integer 4
+
+let%test "Builtins len error" =
+  let input = {|len(4)|} in
+  let result =  setup input in
+  result = Error "Len: invalid argument (only strings allowed)"

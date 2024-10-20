@@ -4,6 +4,7 @@ type t =
   | String of string
   | Return of t
   | Function of function_info
+  | Builtin of builtin
   | Error of string
   | Null
 and function_info = {
@@ -11,6 +12,9 @@ and function_info = {
   body: Ast.block_statement;
   env: t Environment.t;
 }
+and builtin =
+  | Unary of (t -> t)
+  | Binary of (t -> t -> t)
 
 let rec show obj =
   match obj with
@@ -19,5 +23,6 @@ let rec show obj =
   | String s -> s
   | Return obj -> "return: " ^ show obj
   | Function _ -> "<function>"
+  | Builtin _ -> "<builtin function>"
   | Error msg -> "Error: " ^ msg
   | Null -> "<null>"

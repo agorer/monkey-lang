@@ -98,6 +98,7 @@ and eval_call func args env =
     let env = eval_args func.parameters args env in
     let result, _ = eval_statements func.body.statements env in
     unwrap_return result
+  | Builtin func -> eval_builtin func args env
   | _ -> failwith "Function call does not evaluate to function expression"
 
 and unwrap_return result =
@@ -113,3 +114,11 @@ and eval_args parameters args env =
     let env = Environment.set env param.value arg_value in
     eval_args parameters args env
   | _, _ -> failwith "In function call: number of params and args is different"
+
+and eval_builtin func args env =
+  let first = eval_expression (List.hd args) env in
+  match func with
+  | Unary func -> func first
+  | Binary func ->
+    let second = eval_expression (List.nth args 1) env in
+    func first second
