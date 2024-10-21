@@ -118,6 +118,7 @@ and prefix_func token =
   | If -> Some parse_if
   | Function -> Some parse_fn
   | LeftBracket -> Some parse_array
+  | LeftBrace -> Some parse_hash
   | _ -> None
 
 and infix_func token =
@@ -272,6 +273,26 @@ and parse_index parser array =
   let parser = advance_to parser Token.RightBracket in
   parser, Ast.Index({ token; array; index })
 
+and parse_hash parser =
+  let token = parser.current in
+  let parser, pairs = parse_pairs parser [] in
+  parser, Ast.Hash({ token; pairs })
+
+and parse_pairs parser pairs =
+  match parser.current with
+  | RightBrace -> parser, pairs
+  | _ ->                                 (* FIXME Empty hashes? *)
+    let parser, token = next_token parser in (* skip separator or comma *)
+    if token <> Token.RightBrace then
+      let parser, key = parse_expression parser Lowest in
+      let parser, _ = next_token parser in (* skip string token *)
+      let parser, _ = next_token parser in (* skip colon *)
+      let parser, value = parse_expression parser Lowest in
+      let parser, _ = next_token parser in (* skip last expression token *)
+      parse_pairs parser (pairs @ [key, value])
+    else
+      parser, pairs
+    
 let rec parse_program parser program =
   match parser.current with
   | Token.EOF -> program

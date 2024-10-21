@@ -1,8 +1,11 @@
+module HashMap = Map.Make(String)
+    
 type t =
   | Integer of int
   | Boolean of bool
   | String of string
   | Array of t list
+  | Hash of t HashMap.t
   | Return of t
   | Function of function_info
   | Builtin of builtin
@@ -26,6 +29,13 @@ let rec show obj =
     let inside =
       List.fold_left (fun acc elt -> acc ^ ", " ^ (show elt)) "" elements in
     "[" ^ (remove_first_comma inside) ^ "]"
+  | Hash pairs ->
+    let inside =
+      HashMap.fold
+        (fun key value acc -> acc ^ ", " ^ key ^ ": " ^ (show value))
+        pairs 
+        "" in
+    "{" ^ (remove_first_comma inside) ^ "}"
   | Return obj -> "return: " ^ show obj
   | Function _ -> "<function>"
   | Builtin _ -> "<builtin function>"
@@ -33,3 +43,11 @@ let rec show obj =
   | Null -> "<null>"
 and remove_first_comma str =
   String.sub str 2 (String.length str - 2)
+
+let hash obj =
+  match obj with
+  | Integer i -> "Integer::" ^ (string_of_int i)
+  | Boolean b -> "Boolean::" ^ (string_of_bool b)
+  | String s -> "String::" ^ s
+  | other -> failwith ("Invalid hash parameter: " ^ (show other))
+        

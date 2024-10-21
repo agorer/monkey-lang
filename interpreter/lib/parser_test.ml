@@ -113,3 +113,13 @@ let%test "Array index expressions" =
   let input ="[1, 2][1]" in
   let program = setup input in
   (List.length program) = 1
+
+let%test "Hash expressions" =
+  let input = {|{ "age": 5 }|} in
+  let program = setup input in
+  (List.length program) = 1
+
+let%test "Empty hash" = 
+  let input = {|{ }|} in
+  let program = setup input in
+  (List.length program) = 1

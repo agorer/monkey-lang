@@ -158,3 +158,20 @@ let%test "Eval array indexation" =
   let input = "[1, 2][1]" in
   let result = setup input in
   result = Integer 2
+
+let%test "Eval hash expression" =
+  let input = {|{ "age": 5 }|} in
+  let result = setup input in
+  let open Object  in
+  let expected = Hash (HashMap.of_list ["String::age", Integer 5]) in
+  result = expected
+
+let%test "Eval hash index expressions" =
+  let input = {|{ "age": 5 }["age"]|} in
+  let result = setup input in
+  result = Integer 5
+
+let%test "Eval not-found hash index expressions" =
+  let input = {|{ "age": 5 }["name"]|} in
+  let result = setup input in
+  result = Null

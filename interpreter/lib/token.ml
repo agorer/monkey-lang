@@ -22,6 +22,7 @@ type t =
   (* Delimiters *)
   | Comma
   | Semicolon
+  | Colon
   | LeftParen
   | RightParen
   | LeftBrace

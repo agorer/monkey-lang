@@ -38,6 +38,7 @@ and eval_expression expr env =
   | Call { func; arguments; _} -> eval_call func arguments env
   | Array { elements; _} -> eval_array elements env
   | Index { array; index; _} -> eval_index array index env
+  | Hash hash -> Hash (eval_pairs hash.pairs env)
 
 and eval_prefix operator right =
   match operator with
@@ -137,11 +138,34 @@ and eval_elements elements env values =
     eval_elements elements env values
 
 and eval_index array index env =
+  let open Object in
   let values = eval_expression array env in
+  let index = eval_expression index env in
   match values with
   | Array elements ->
-    let index = eval_expression index env in
     (match index with
      | Integer i -> List.nth elements i
      | _ -> failwith "Only integers can be used as an index")
+  | Hash pairs ->
+    let index_hash = hash index in
+    (* print_endline (show values); *)
+    (* print_endline index_hash; *)
+    (* print_endline (show (HashMap.find index_hash pairs)); *)
+    unwrap_option (HashMap.find_opt index_hash pairs)
   | _ -> failwith "Only array expressions can be indexed"
+
+and unwrap_option maybe =
+  match maybe with
+  | Some result -> result
+  | None -> Null  
+
+and eval_pairs pairs env =
+  let open Object in
+  List.fold_left
+    (fun acc (key, value) ->
+       let key = hash (eval_expression key  env) in
+       let value = eval_expression value env in
+       HashMap.add key value acc)
+    HashMap.empty
+    pairs
+

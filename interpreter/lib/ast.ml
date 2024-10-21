@@ -27,6 +27,7 @@ and expression =
   | Call of fn_call_expression
   | Array of array_literal
   | Index of array_index
+  | Hash of hash_expression
 and identifier = {
   token: Token.t;
   value: string
@@ -76,6 +77,10 @@ and array_index = {
   token: Token.t;
   array: expression;
   index: expression;
+}
+and hash_expression = {
+  token: Token.t;
+  pairs: (expression * expression) list;
 }
 [@@deriving show]
 

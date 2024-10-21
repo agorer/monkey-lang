@@ -108,6 +108,7 @@ let nextToken lexer =
   | None -> lexer, Token.EOF
   | Some '=' -> consume_equal lexer
   | Some ';' -> lexer, Token.Semicolon
+  | Some ':' -> lexer, Token.Colon
   | Some '(' -> lexer, Token.LeftParen
   | Some ')' -> lexer, Token.RightParen
   | Some ',' -> lexer, Token.Comma
