@@ -42,7 +42,10 @@ let rec show obj =
   | Error msg -> "Error: " ^ msg
   | Null -> "<null>"
 and remove_first_comma str =
-  String.sub str 2 (String.length str - 2)
+  if (String.length str) >= 2 then
+    String.sub str 2 (String.length str - 2)
+  else
+    str
 
 let hash obj =
   match obj with

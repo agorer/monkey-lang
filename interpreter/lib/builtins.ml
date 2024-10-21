@@ -5,6 +5,8 @@ let rec add_builtins env =
   let env = Environment.set env "first" (Builtin (Unary first)) in
   let env = Environment.set env "last" (Builtin (Unary last)) in
   let env = Environment.set env "rest" (Builtin (Unary rest)) in
+  let env = Environment.set env "push" (Builtin (Binary push)) in
+  let env = Environment.set env "puts" (Builtin (Unary puts)) in
   env
 
 and len str =
@@ -34,3 +36,12 @@ and rest array =
     if List.is_empty elements then Array([])
     else Array(List.tl elements)
   | _ -> failwith "First: invalid argument (only arrays allowed)"
+
+and push array obj =
+  match array with
+  | Object.Array elements ->
+    Array (elements @ [obj])
+  | _ -> failwith "Push: invalid argument (only arrays allowed)"
+
+and puts obj =
+  String (Object.show obj)

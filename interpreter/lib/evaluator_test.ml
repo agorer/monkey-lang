@@ -154,6 +154,11 @@ let%test "Eval array expression" =
   let result = setup input in
   result = Array [Integer 1; Integer 2]
 
+let%test "Eval empty array expression" =
+  let input  = "[]" in
+  let result = setup input in
+  result = Array []
+
 let%test "Eval array indexation" =
   let input = "[1, 2][1]" in
   let result = setup input in
